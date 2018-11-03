@@ -28,7 +28,6 @@
     - POST user.php?post=add
     - GET user.php?post=update&id=$id
     - PUT user.php?post=update&id=$id
-    - GET user.php?post=delete&id=$id
     - DELETE user.php?post=delete&id=$id
 
 Before going to CRUD Procedural we have to create a database
