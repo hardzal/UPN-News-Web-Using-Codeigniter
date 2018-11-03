@@ -64,7 +64,12 @@
                 break;
                 case "login":
                     if(isset($_POST['submit'])) {
+                        $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
+                        $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
 
+                        $crud->selectSpesify("SELECT username, password FROM reporter WHERE username=? AND password=?");
+                        $crud->bindSelect("ss", $username, $password);
+                        $crud->sessionSave($username);
                     }
             ?>
                 <h2>Login Form</h2>
