@@ -28,7 +28,7 @@ class CRUD {
     public function getQuery() {
         return $this->_query;
     }
-
+    
     public function querySimple() {   
         $this->_queryRun = mysqli_query($this->connect(), $this->getQuery());
         if(!$this->_queryRun) $this->errorOutput();
@@ -36,6 +36,10 @@ class CRUD {
     
     public function queryRun() {
         return $this->_queryRun;
+    }
+
+    public function getRows() {
+        return mysqli_num_rows($this->queryRun());
     }
 
     public function queryShow() {
@@ -59,14 +63,12 @@ class CRUD {
 
     public function createSpesify($table, $column, $value) {
         $this->_queryRun = mysqli_query($this->connect(), "INSERT INTO {$table} VALUES {$column} = '{$value}'");
-        if($this->_queryRun) return $this->_queryRun;
-        else $this->errorOutput();
+        if(!$this->_queryRun) $this->errorOutput();
     }
     
     public function updateSpesify($table, $data, $key, $value) {
         $this->_queryRun = mysqli_query($this->connect(), "UPDATE {$table} SET {$data} WHERE {$key} = '{$value}'");
-        if($this->_queryRun) return $this->_queryRun;
-        else $this->errorOutput();
+        if($this->_queryRun) $this->errorOutput();
     }
 
     public function deleteSpesify($table, $column, $value) {
@@ -77,21 +79,64 @@ class CRUD {
         }
     }
 
+
+    public function addPost() {
+        list($username, $headline, $judul, $kategori, list($file_name, $file_size, $file_type, $file_tmp), $isi) = func_get_args();
+        $headline = trim($headline);
+        $judul = trim($judul);
+        $isi = trim($isi);
+        $file_destination = "img/";
+        $hari = date('l', time());
+        if(move_uploaded_file($file_tmp, $file_destination.$file_name)) {
+            $query = "INSERT INTO berita VALUES('', '1', '$username', '$judul', '$headline', '$isi', '$hari', now(), now(), '$file_name')";
+            $this->setQuery($query);
+            $this->querySimple();
+            if($this->queryRun()) {
+                echo "<script>alert('berhasil menambahkan berita!')</script>";
+            } 
+        } else {
+            echo "<script>alert('Gagal menambahkan berita baru!')</script>";
+        }
+    }
+
+    public function updatePost() {
+
+    }
+
+    public function delPost($id) {
+        $this->deleteSpesify("berita", "no_berita", $id);
+        header("Location: user.php?post=index");
+    }
+
     public function sessionSave($username) {
         if(mysqli_num_rows($this->queryRun()) == 1) {
             $_SESSION['username'] = $username;
-            
+            header("Location:user.php?post=index");
         } else {
             echo "<script>alert('Username/Password salah')</script>";
         }
     }
 
-    public function checkLogin() {
+    public function sessionGet() {
+        return $_SESSION['username'];
+    }
 
+    public function checkLogin() {
+        if(!isset($_SESSION['username'])&&empty($_SESSION['username'])) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public function logout() {
+        unset($_SESSION['username']);
     }
 
     public function errorOutput() {
         die(mysqli_errno($this->connect())."::".mysqli_error($this->connect()));
     }
 }
+
+$crud = new CRUD("localhost", "root", "", "berita_upn");
 ?>

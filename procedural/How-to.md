@@ -20,8 +20,8 @@
 
 - post.php
     - GET post.php?id=$id
-    - GET post.php?cat=$id
-    - GET post.php?auth=$id
+    - GET post.php?category=$id
+    - GET post.php?user=$id
 
 - user.php
     - GET user.php?post=add

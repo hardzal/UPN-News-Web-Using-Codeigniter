@@ -1,6 +1,5 @@
 <?php
     require_once "crud.php";
-    $crud = new CRUD("localhost", "root", "", "berita_upn");
 ?>
 <!DOCTYPE html>
 <html lang="en">
