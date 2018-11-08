@@ -26,9 +26,16 @@
         <div class="row">
             <nav>
                 <ul>
+                    <li><a href='index.php'>Home</a></li>
+                    <?php if(!$crud->checkLogin()) { ?>
                     <li><a href="index.php?p=login">Login</a></li>
                     <li><a href="index.php?p=register">Register</a></li>
+                    <?php } else { ?>
+                    <li><p>Selamat datang, <?php echo $crud->sessionGet();?></p></li>
+                    <li><a href="user.php?post=index">Posts</a></li>
                     <li><a href="user.php?post=add">Post Add</a></li>
+                    <li><a href="index.php?p=logout">Logout</a></li>
+                    <?php } ?>
                 </ul>
             </nav>
         </div>
@@ -37,10 +44,12 @@
             <div class="col-sm-8">
             <?php
                 $page = isset($_GET['p']) ? $_GET['p'] : "";
+               
+                $page = strip_tags(trim($page));
+               
                 if($page == "") {
                     $page = "index";
                 }
-
                 switch($page) {
                     case "index":
             ?>
@@ -52,9 +61,9 @@
             ?>
                     <div class="post">
                         <h2>
-                            <a href="post.php?id=<?php echo $data['no_berita'];?>"><?php echo $data['judul_berita'];?></a>
+                            <a href="post.php?op=view&id=<?php echo $data['no_berita'];?>"><?php echo $data['judul_berita'];?></a>
                         </h2>
-                        <p>Posted ON <?php echo $data['jam_berita']. " ". $data['tgl_berita'];?> by <a href="user.php?username=<?php echo $data['username'];?>"><?php echo $data['nama_lengkap'];?></a> || <a href="post.php?cat=<?php echo $data['no_kategori'];?>"><?php echo $data['nama_kategori'];?></a></p>
+                        <p>Posted ON <?php echo $data['jam_berita']. " ". $data['tgl_berita'];?> by <a href="post.php?op=author&username=<?php echo $data['username'];?>"><?php echo $data['nama_lengkap'];?></a> || <a href="post.php?op=category&id=<?php echo $data['no_kategori'];?>"><?php echo $data['nama_kategori'];?></a></p>
                     </div>
                 <?php
                     }
@@ -82,17 +91,42 @@
             <?php
                     break;
                 case "register":
+                if(isset($_POST['submit'])) {
+                    $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
+                    $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
+                    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+                    $nama = filter_input(INPUT_POST, 'nama_lengkap', FILTER_SANITIZE_STRING);
+                    $no_hp = filter_input(INPUT_POST, 'no_hp', FILTER_SANITIZE_STRING);
+                    $query = "INSERT INTO reporter VALUES('$username', '$password', '$nama', '$email', '$no_hp', 'gambar.jpg')";
+                    $crud->setQuery($query);
+                    $crud->querySimple();
+                    if($crud->queryRun()) {
+                        echo "<script>alert('Berhasil mendaftar!')</script>";
+                    }
+                }
             ?>
                 <h2>Register Form</h2>
                 <form method="post">
                     <label for="username">Username</label><br/>
-                    <input type="text" name="username"/><br/>
+                    <input type="text" name="username" required/><br/>
                     <label for="password">Password</label><br/>
-                    <input type="password" name="password"/><br/><br/>
+                    <input type="password" name="password" required/><br/>
+                    <label for="nama_lengkap">Nama Lengkap</label><br/>
+                    <input type="text" name="nama_lengkap" required/><br/>
+                    <label for="email">Email</label><br/>
+                    <input type="email" name="email" required/><br/>
+                    <label for="email">No HP</label><br/>
+                    <input type="text" name="no_hp" required/><br/><br/>
                     <input type="submit" name="submit"/>
                 </form>
             <?php
                     break;
+                    case "logout":
+                        $crud->logout();
+                        header("Location: index.php");
+                    break;
+                    default:
+                        header("Location: index.php");
                 }
             ?>
             </div>

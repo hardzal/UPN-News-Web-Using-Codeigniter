@@ -18,6 +18,7 @@
             <div class="col-sm-4">
                 <nav>
                     <ul>
+                        <li><a href="index.php">Home</a></li>
                         <li><a href="user.php?post=index">Posts</a></li>
                         <li><a href="user.php?post=add">Post Add</a></li>
                         <li><a href="index.php?p=logout">Logout</a></li>
@@ -53,7 +54,6 @@
                             $headline = filter_input(INPUT_POST, 'headline', FILTER_SANITIZE_STRING);
                             $judul = filter_input(INPUT_POST, 'judul', FILTER_SANITIZE_STRING);
                             $kategori = filter_input(INPUT_POST, 'kategori', FILTER_SANITIZE_STRING);
-                            // $gambar = array();
                             $gambar_name = $_FILES['gambar']['name'];
                             $gambar_size = $_FILES['gambar']['size'];
                             $gambar_type = $_FILES['gambar']['type'];
@@ -71,7 +71,15 @@
                                 <input type="text" name="judul"/><br>
                             <label for="kategori">Kategori</label><br>
                                 <select name="kategori">
-                                    <option value="kategori">Kategori</option>
+                                <?php
+                                    $crud->setQuery("SELECT * FROM kategori");
+                                    $crud->querySimple();
+                                    while($dt = $crud->queryShow()) {
+                                ?>
+                                        <option value="<?php echo $dt['no_kategori'];?>"><?php echo $dt['nama_kategori'];?></option>
+                                <?php
+                                    }
+                                ?>
                                 </select><br>
                             <label for="gambar">Image</label><br>
                                 <input type="file" name="gambar"/><br>
@@ -82,8 +90,60 @@
                         </form>
                 <?php
                         break;
-                        case "update":
-
+                        case "edit":
+                        if(!isset($_GET['id']) && empty($_GET['id'])) {
+                            echo "<script>alert('Tidak ada id post')</script>";
+                            header("Location: user.php?post=index");
+                        }
+                        $id = strip_tags(trim($_GET['id']));
+                        $crud->setQuery("SELECT * FROM berita WHERE no_berita='$id'");
+                        $crud->querySimple();
+                        $dt = $crud->queryShow();
+                
+                        if(isset($_POST['submit'])) {
+                            $headline = filter_input(INPUT_POST, 'headline', FILTER_SANITIZE_STRING);
+                            $judul = filter_input(INPUT_POST, 'judul', FILTER_SANITIZE_STRING);
+                            $kategori = filter_input(INPUT_POST, 'kategori', FILTER_SANITIZE_STRING);
+                            $isi = filter_input(INPUT_POST, 'isi', FILTER_SANITIZE_STRING);
+                            if(isset($_FILES['gambar']['name'])&&!empty($_FILES['gambar']['name'])) {
+                                $gambar_name = $_FILES['gambar']['name'];
+                                $gambar_size = $_FILES['gambar']['size'];
+                                $gambar_type = $_FILES['gambar']['type'];
+                                $gambar_tmp = $_FILES['gambar']['tmp_name'];
+                                $gambar = [$gambar_name, $gambar_size, $gambar_type, $gambar_tmp];
+                                $crud->updatePost($username, $headline, $judul, $kategori, $gambar, $isi);
+                            } else {
+                                $crud->updatePost($id, $username, $headline, $judul, $kategori, $isi);
+                            }
+                        }
+                ?>
+                    <h3>Update Post</h3>
+                    <form method="post" action="" enctype="multipart/form-data">
+                        <label for="headline">Headline Berita</label><br>
+                            <input type="text" name="headline" value="<?php echo $dt['headline_berita'];?>"/><br>
+                        <label for="title">Judul Berita</label><br>
+                            <input type="text" name="judul" value="<?php echo $dt['judul_berita'];?>"/><br>
+                        <label for="kategori">Kategori</label><br>
+                            <select name="kategori">
+                            <?php
+                                $crud->setQuery("SELECT * FROM kategori");
+                                $crud->querySimple();
+                                while($d = $crud->queryShow()) {
+                            ?>
+                                    <option value="<?php echo $d['no_kategori'];?>" <?php
+                                        if($d['no_kategori'] == $dt['no_kategori']) echo "selected";?>><?php echo $d['nama_kategori'];?></option>
+                            <?php
+                                }
+                            ?>
+                            </select><br>
+                        <label for="gambar">Image</label><br>
+                            <input type="file" name="gambar" value="<?php echo $dt['gambar_berita'];?>"/><br>
+                        <label for="isi">Isi</label><br/>
+                            <textarea name="isi" col='10' row='15'><?php echo $dt['isi_berita'];?></textarea>
+                        <br>
+                        <input type="submit" name="submit"/>
+                    </form>
+                <?php
                         break;
                         case "delete":
                             if(isset($_GET['id']) && !empty($_GET['id'])) { 

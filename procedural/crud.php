@@ -29,13 +29,13 @@ class CRUD {
         return $this->_query;
     }
     
+    public function queryRun() {
+        return $this->_queryRun;
+    }
+
     public function querySimple() {   
         $this->_queryRun = mysqli_query($this->connect(), $this->getQuery());
         if(!$this->_queryRun) $this->errorOutput();
-    }
-    
-    public function queryRun() {
-        return $this->_queryRun;
     }
 
     public function getRows() {
@@ -100,12 +100,44 @@ class CRUD {
     }
 
     public function updatePost() {
-
+        if(func_num_args() > 6) {
+            list($no_berita, $username, $headline, $judul, $kategori, list($file_name, $file_size, $file_type, $file_tmp), $isi) = func_get_args();
+        } else {
+            list($no_berita, $username, $headline, $judul, $kategori, $isi) = func_get_args();
+            $file_name = '';
+        }
+        $headline = trim($headline);
+        $judul = trim($judul);
+        $isi = trim($isi);
+        $file_destination = "img/";
+        $hari = date('l', time());
+        
+        if(!file_exists($file_destination.$file_name)) {
+            if(move_uploaded_file($file_tmp, $file_destination.$file_name)) {
+                $query = "UPDATE berita SET no_kategori = $kategori, judul_berita='$judul', headline_berita = '$headline', isi_berita = '$isi', hari = '$hari', tgl_berita = now(), jam_berita = now(), gambar_berita = '$file_name' WHERE no_berita = '$no_berita'";
+            } else {
+                die("<script>alert('gagal mengupload berita!')</script>");
+            }
+        }  else {
+            $query = "UPDATE berita SET no_kategori = $kategori, judul_berita='$judul', headline_berita = '$headline', isi_berita = '$isi', hari = '$hari', tgl_berita = now(), jam_berita = now() WHERE no_berita = '$no_berita'";
+        }  
+        $this->setQuery($query);
+        $this->querySimple();
+        if ($this->queryRun()) {
+            echo "<script>alert('berhasil menambahkan berita!')</script>";
+            header("Location: user.php?post=index");
+        } else {
+            echo "<script>alert('gagal menambahkan berita!')</script>";
+        }
     }
 
     public function delPost($id) {
         $this->deleteSpesify("berita", "no_berita", $id);
         header("Location: user.php?post=index");
+    }
+
+    public function showPost() {
+        $this->setQuery("SELECT * FROM berita");
     }
 
     public function sessionSave($username) {
