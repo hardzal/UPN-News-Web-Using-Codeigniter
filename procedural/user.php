@@ -160,3 +160,6 @@
     </div>
 </body>
 </html>
+<?php
+    $crud->disconnect();
+?>

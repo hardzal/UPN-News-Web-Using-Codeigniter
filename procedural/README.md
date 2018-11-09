@@ -11,7 +11,7 @@
   8.  ketika user sudah mendaftar maka otomatis terdaftar sebagai reporter maka user bisa memasukkan laporan beritanya.
 
 
-## Page
+## Routes
 - index.php
     - GET index.php?p=login
     - GET index.php?p=register
@@ -19,9 +19,9 @@
     - GET index.php?search=$query
 
 - post.php
-    - GET post.php?id=$id
-    - GET post.php?category=$id
-    - GET post.php?user=$id
+    - GET post.php?op=view&id=$id
+    - GET post.php?op=category&id=$id
+    - GET post.php?op=username&id=$id
 
 - user.php
     - GET user.php?post=add
@@ -30,7 +30,7 @@
     - PUT user.php?post=update&id=$id
     - DELETE user.php?post=delete&id=$id
 
-Before going to CRUD Procedural we have to create a database
+Before we going to CRUD Procedural we have to create a database
 
 ## first, CREATE DATABASE
 

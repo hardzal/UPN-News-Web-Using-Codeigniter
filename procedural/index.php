@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
     <link href="style/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <script src="js/bootstrap.bundle.min.js" type="text/javascript"></script>
     <title>Home</title>
 </head>
 <body>
@@ -131,7 +132,26 @@
             ?>
             </div>
         </div>
+        <div id="myModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Search resultsz</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Some text in the modal.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    <script type="text/javascript">
+        $('#myModal').modal('show');
+    </script>
 </body>
 </html>
 <?php
