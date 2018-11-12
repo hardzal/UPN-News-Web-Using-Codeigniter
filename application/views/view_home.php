@@ -23,10 +23,17 @@
     <small><em>My Message for You</em></small>
     <nav>
     <?php
-        foreach($message as $key=>$value){
-            echo "<a href='#'>$value</a>";
-        }
+        // foreach($message as $key=>$value){
+        //     echo "<a href='#'>$value</a>";
+        // }
     ?>
     </nav>
+
+    <form action="<?php echo base_url('index.php/home/sum') ?>" method="POST">
+    <input type="number" name="a" id="">
+    <input type="number" name="b">
+
+    <input type="submit" value="kirim">
+</form>
 </body>
 </html>
